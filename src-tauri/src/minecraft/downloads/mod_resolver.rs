@@ -538,36 +538,8 @@ pub async fn resolve_target_mods(
         debug!("Flagsmith mod blocking is disabled (no Vito pack selected)");
     }
 
-    // 1. Process Pack Mods (Only Modrinth)
-    let effective_pack_id = profile.effective_vito_pack_id().await;
-    if let (Some(pack_id), Some(config)) = (effective_pack_id.as_ref(), vito_config) {
-        info!("Resolving mods from selected Vito Pack: '{}'", pack_id);
-        match config.get_resolved_pack_definition(pack_id) {
-            Ok(pack_definition) => {
-                for mod_entry in &pack_definition.mods {
-                    let outcome = resolve_pack_entry(
-                        mod_entry,
-                        pack_id,
-                        profile,
-                        minecraft_version,
-                        loader_str,
-                        mod_cache_dir,
-                        &mut final_mods,
-                        enable_flagsmith_blocking,
-                    )
-                    .await;
-                    report.pack.insert(mod_entry.id.clone(), outcome);
-                }
-            }
-            Err(e) => {
-                warn!(
-                    "Could not resolve Vito Pack definition for pack ID '{}': {}. Skipping pack mods.",
-                    pack_id, e
-                );
-                report.pack_resolve_failed = true;
-            }
-        }
-    }
+    // 1. Process Pack Mods (disabled: preparing own mod)
+    info!("Proprietary Norisk pack mod injection disabled (preparing own mod).");
 
     // 2. Process Profile Mods (Only Modrinth for Overrides)
     info!(

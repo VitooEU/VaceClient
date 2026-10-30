@@ -739,3 +739,101 @@ nav button:not(.no-radius),
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Linux / WebKitGTK High-Performance Tuning:
+   WebKitGTK software/compositor overhead causes massive CPU-bound
+   convolution delays (500-1500ms) on backdrop-filter and transitions.
+   On Linux we disable backdrop-filter and use crisp, GPU-friendly
+   solid & semi-solid surfaces, immediate hover transitions, and
+   isolated pointer events without compromising macOS visuals.
+   ═══════════════════════════════════════════════════════════════ */
+.platform-linux .liquid-glass-header {
+    background: #10131c !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.platform-linux .liquid-glass-panel {
+    background: #141824 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.platform-linux .liquid-glass-card {
+    background: #171c28 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+    transition: background 0.08s ease, border-color 0.08s ease !important;
+}
+
+.platform-linux .liquid-glass-card:hover {
+    background: #1f2536 !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    transform: none !important;
+}
+
+.platform-linux .liquid-glass-sidebar {
+    background: #0f121a !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.platform-linux .glass-surface {
+    background: #161a24 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.platform-linux .glass-surface-hover:hover {
+    background: #1f2536 !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.platform-linux .glass-button-primary {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: background 0.08s ease, box-shadow 0.08s ease !important;
+}
+
+.platform-linux .glass-button-secondary {
+    background: rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    transition: background 0.08s ease, border-color 0.08s ease !important;
+}
+
+.platform-linux .glass-button-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.20) !important;
+}
+
+.platform-linux .glass-pill-nav {
+    background: #10121a !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Instant button hover responsiveness on Linux */
+.platform-linux button,
+.platform-linux [role="button"],
+.platform-linux .cursor-pointer {
+    transition-duration: 75ms !important;
+}
+
+/* Ensure no backdrop filter is applied anywhere on Linux */
+.platform-linux [class*="backdrop-blur"],
+.platform-linux [style*="backdrop-filter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+

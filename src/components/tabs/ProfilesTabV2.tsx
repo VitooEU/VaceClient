@@ -100,7 +100,7 @@ export function ProfilesTabV2() {
   const isNrcGroup = (groupName: string | null): boolean => {
     if (!groupName) return false;
     const normalized = groupName.toLowerCase();
-    return normalized === "vtc" || normalized === "vitoclient" || normalized === "vito client";
+    return normalized === "vace" || normalized === "vtc" || normalized === "vitoclient" || normalized === "vito client" || normalized === "norisk client" || normalized === "nrc";
   };
 
   // Reduce a full game version to its major bucket, e.g. "1.21.10" -> "1.21", "26.1.2" -> "26.1"

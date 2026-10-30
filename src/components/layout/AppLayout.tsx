@@ -345,7 +345,7 @@ export function AppLayout({
           : `url('/launcher-bg.png')`,
         borderRadius: "4px",
         transform: "translateZ(0)",
-        willChange: "transform",
+        willChange: "auto",
       }}
     >
       <HeaderBar
@@ -522,15 +522,16 @@ function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
         /* macOS mode: buttons left, title centered absolutely */
         <>
           {/* Left: macOS native traffic light buttons */}
-          <div className="flex items-center gap-2 group z-10 select-none">
+          <div className="flex items-center gap-2 group z-10 select-none" data-tauri-drag-region="false">
             {/* Close (Red) */}
             <div
               ref={closeRef}
-              className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] active:brightness-90 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0"
+              data-tauri-drag-region="false"
+              className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
               style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
               title={t('window.close')}
             >
-              <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#4d0000" strokeWidth="1.2" strokeLinecap="round">
+              <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity duration-75 pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#4d0000" strokeWidth="1.2" strokeLinecap="round">
                 <line x1="1" y1="1" x2="5" y2="5" />
                 <line x1="5" y1="1" x2="1" y2="5" />
               </svg>
@@ -538,22 +539,24 @@ function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
             {/* Minimize (Yellow) */}
             <div
               ref={minimizeRef}
-              className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] active:brightness-90 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0"
+              data-tauri-drag-region="false"
+              className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
               style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
               title={t('window.minimize')}
             >
-              <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#664400" strokeWidth="1.2" strokeLinecap="round">
+              <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity duration-75 pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#664400" strokeWidth="1.2" strokeLinecap="round">
                 <line x1="1" y1="3" x2="5" y2="3" />
               </svg>
             </div>
             {/* Maximize (Green) */}
             <div
               ref={maximizeRef}
-              className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] active:brightness-90 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0"
+              data-tauri-drag-region="false"
+              className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
               style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
               title={t('window.maximize')}
             >
-              <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity pointer-events-none" viewBox="0 0 6 6" fill="#004d11">
+              <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity duration-75 pointer-events-none" viewBox="0 0 6 6" fill="#004d11">
                 <polygon points="1,1 5,1 1,5" />
                 <polygon points="5,5 1,5 5,1" />
               </svg>
@@ -649,15 +652,16 @@ function WindowControls({
 
   if (macWindowControls) {
     return (
-      <div className="flex items-center gap-2 ml-4 group select-none">
+      <div className="flex items-center gap-2 ml-4 group select-none" data-tauri-drag-region="false">
         {/* macOS Close (Red) */}
         <div
           ref={closeRef}
-          className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] active:brightness-90 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0"
+          data-tauri-drag-region="false"
+          className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
           style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
           title={t('window.close')}
         >
-          <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#4d0000" strokeWidth="1.2" strokeLinecap="round">
+          <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity duration-75 pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#4d0000" strokeWidth="1.2" strokeLinecap="round">
             <line x1="1" y1="1" x2="5" y2="5" />
             <line x1="5" y1="1" x2="1" y2="5" />
           </svg>
@@ -665,22 +669,24 @@ function WindowControls({
         {/* macOS Minimize (Yellow) */}
         <div
           ref={minimizeRef}
-          className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] active:brightness-90 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0"
+          data-tauri-drag-region="false"
+          className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
           style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
           title={t('window.minimize')}
         >
-          <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#664400" strokeWidth="1.2" strokeLinecap="round">
+          <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity duration-75 pointer-events-none" viewBox="0 0 6 6" fill="none" stroke="#664400" strokeWidth="1.2" strokeLinecap="round">
             <line x1="1" y1="3" x2="5" y2="3" />
           </svg>
         </div>
         {/* macOS Maximize (Green) */}
         <div
           ref={maximizeRef}
-          className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] active:brightness-90 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0"
+          data-tauri-drag-region="false"
+          className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
           style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
           title={t('window.maximize')}
         >
-          <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity pointer-events-none" viewBox="0 0 6 6" fill="#004d11">
+          <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-80 transition-opacity duration-75 pointer-events-none" viewBox="0 0 6 6" fill="#004d11">
             <polygon points="1,1 5,1 1,5" />
             <polygon points="5,5 1,5 5,1" />
           </svg>
@@ -690,24 +696,27 @@ function WindowControls({
   }
 
   return (
-    <div className="flex items-center gap-1 ml-4 bg-white/[0.03] border border-white/[0.06] rounded-xl p-0.5">
+    <div className="flex items-center gap-1 ml-4 bg-white/[0.03] border border-white/[0.06] rounded-xl p-0.5" data-tauri-drag-region="false">
       <div
         ref={minimizeRef}
-        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-150 cursor-pointer rounded-xl"
+        data-tauri-drag-region="false"
+        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-75 cursor-pointer rounded-xl"
         title={t('window.minimize')}
       >
         <Icon icon="lucide:minus" className="w-3.5 h-3.5" />
       </div>
       <div
         ref={maximizeRef}
-        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-150 cursor-pointer rounded-xl"
+        data-tauri-drag-region="false"
+        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-75 cursor-pointer rounded-xl"
         title={t('window.maximize')}
       >
         <Icon icon="lucide:square" className="w-3 h-3" />
       </div>
       <div
         ref={closeRef}
-        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-red-500/25 transition-all duration-150 cursor-pointer rounded-xl"
+        data-tauri-drag-region="false"
+        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-red-500/25 transition-all duration-75 cursor-pointer rounded-xl"
         title={t('window.close')}
       >
         <Icon icon="lucide:x" className="w-3.5 h-3.5" />

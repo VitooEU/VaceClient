@@ -3051,80 +3051,7 @@ impl ProfileManager {
     }
 
     pub async fn sync_standard_profiles(&self) -> Result<()> {
-        info!("ProfileManager: Starting standard profiles synchronization...");
-
-        // Ensure profiles are loaded before syncing to avoid race conditions
-        self.ensure_profiles_loaded().await?;
-
-        // Get standard profiles from vito version manager
-        let state = match crate::state::state_manager::State::get().await {
-            Ok(state) => state,
-            Err(e) => {
-                warn!("ProfileManager: Could not get global state for standard profile sync: {}", e);
-                return Ok(()); // Non-critical, skip sync
-            }
-        };
-
-        let standard_profiles = state.vito_version_manager.get_config().await.profiles;
-        info!("ProfileManager: Found {} standard profiles to sync", standard_profiles.len());
-
-        if standard_profiles.is_empty() {
-            info!("ProfileManager: No standard profiles found, skipping sync");
-            return Ok(());
-        }
-
-        let stored = self.store.counts().await.map(|(p, _)| p).unwrap_or(0) as usize;
-        let in_memory = self.profiles.read().await.len();
-        if stored > in_memory {
-            warn!(
-                "ProfileManager: skipping standard profile sync, the database holds {} profiles but only {} are loaded",
-                stored, in_memory
-            );
-            return Ok(());
-        }
-
-        // Get all user profiles and create lookup maps
-        let user_profiles = self.list_profiles().await?;
-        let mut existing_copies_by_source_id: std::collections::HashMap<Uuid, Uuid> = std::collections::HashMap::new();
-        
-        for profile in &user_profiles {
-            if let Some(source_id) = profile.source_standard_profile_id {
-                existing_copies_by_source_id.insert(source_id, profile.id);
-            }
-        }
-
-        let mut copies_created = 0;
-        let mut copies_updated = 0;
-
-        for standard_profile in standard_profiles {
-            if let Some(existing_copy_id) = existing_copies_by_source_id.get(&standard_profile.id) {
-                // Update existing copy with forced fields
-                match self.update_copy_with_forced_fields(*existing_copy_id, &standard_profile).await {
-                    Ok(updated) => {
-                        if updated {
-                            info!("ProfileManager: Updated forced fields for copy {} of standard profile '{}'", existing_copy_id, standard_profile.name);
-                            copies_updated += 1;
-                        }
-                    }
-                    Err(e) => {
-                        warn!("ProfileManager: Failed to update copy {} for standard profile '{}': {}", existing_copy_id, standard_profile.name, e);
-                    }
-                }
-            } else {
-                // Create new copy
-                match self.create_editable_copy_from_standard(&standard_profile).await {
-                    Ok(new_id) => {
-                        info!("ProfileManager: Created editable copy {} for standard profile '{}'", new_id, standard_profile.name);
-                        copies_created += 1;
-                    }
-                    Err(e) => {
-                        warn!("ProfileManager: Failed to create copy for standard profile '{}': {}", standard_profile.name, e);
-                    }
-                }
-            }
-        }
-
-        info!("ProfileManager: Standard profile sync complete. Created {} new copies, updated {} existing copies", copies_created, copies_updated);
+        info!("ProfileManager: Standard profiles sync disabled (no pre-installed Norisk/VTC profiles).");
         Ok(())
     }
 
@@ -3142,6 +3069,26 @@ impl ProfileManager {
 
                 // Load profiles from disk
                 let mut loaded_profiles = self.store.load_all().await?;
+
+                // Automatically purge any legacy Norisk / NRC standard profiles
+                let norisk_ids: Vec<Uuid> = loaded_profiles
+                    .iter()
+                    .filter(|(_, p)| {
+                        p.group.as_deref() == Some("NORISK CLIENT")
+                            || p.name.starts_with("NRC ")
+                            || p.name.starts_with("Norisk")
+                            || p.source_standard_profile_id.is_some()
+                    })
+                    .map(|(id, _)| *id)
+                    .collect();
+
+                if !norisk_ids.is_empty() {
+                    info!("ProfileManager: Purging {} legacy Norisk/NRC profiles from store", norisk_ids.len());
+                    for id in &norisk_ids {
+                        loaded_profiles.remove(id);
+                        let _ = self.store.delete_profile(*id).await;
+                    }
+                }
 
                 // Perform profile migrations
                 let migrated = crate::utils::migration_utils::migrate_profiles(&mut loaded_profiles);

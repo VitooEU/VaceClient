@@ -915,10 +915,8 @@ pub async fn reimport_profiles_from_legacy_json() -> Result<usize, CommandError>
 /// Loads and returns the list of standard profiles from the local configuration file.
 #[tauri::command]
 pub async fn get_standard_profiles() -> Result<VitoVersionsConfig, CommandError> {
-    info!("Executing get_standard_profiles command");
-    let state = State::get().await?;
-    let config = state.vito_version_manager.get_config().await;
-    Ok(config)
+    info!("Executing get_standard_profiles command: standard profiles disabled");
+    Ok(VitoVersionsConfig::default())
 }
 
 #[tauri::command]
@@ -1854,32 +1852,8 @@ pub async fn refresh_vito_packs() -> Result<(), CommandError> {
 /// Returns the standard profiles for immediate use.
 #[tauri::command]
 pub async fn refresh_standard_versions() -> Result<Vec<Profile>, CommandError> {
-    info!("Refreshing standard versions via command...");
-    let state = State::get().await?;
-    let config = state.config_manager.get_config().await;
-
-    match state
-        .vito_version_manager
-        .fetch_and_update_config(&"", config.is_experimental)
-        .await
-    {
-        Ok(_) => {
-            info!("Successfully refreshed standard versions via command.");
-
-            // Sync standard profiles after successful refresh
-            if let Err(e) = state.profile_manager.sync_standard_profiles().await {
-                warn!("Failed to sync standard profiles after refresh: {}", e);
-            }
-
-            // Return the standard profiles
-            let standard_profiles = state.vito_version_manager.get_config().await.profiles;
-            Ok(standard_profiles)
-        }
-        Err(e) => {
-            error!("Failed to refresh standard versions via command: {}", e);
-            Err(CommandError::from(e))
-        }
-    }
+    info!("Refreshing standard versions via command: standard profiles disabled");
+    Ok(vec![])
 }
 
 // Command to update a Modrinth resourcepack in a profile

@@ -1,11 +1,10 @@
 use crate::config::{ProjectDirsExt, LAUNCHER_DIRECTORY};
 use crate::error::Result;
 use crate::integrations::vito_versions::VitoVersionsConfig;
-use crate::minecraft::api::vito_api::VitoApi;
 use crate::state::post_init::PostInitializationHandler;
 use crate::state::state_manager::State;
 use async_trait::async_trait;
-use log::{debug, error, info, trace};
+use log::{error, info, trace};
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::fs;
@@ -53,68 +52,20 @@ impl VitoVersionManager {
     /// Saves the updated configuration to the file on success.
     pub async fn fetch_and_update_config(
         &self,
-        // Assuming no token/experimental needed based on previous confirmation for packs
-        vito_token: &str,
-        is_experimental: bool,
+        _vito_token: &str,
+        _is_experimental: bool,
     ) -> Result<()> {
-        info!("Fetching latest Vito versions config from API...");
-
-        // Assuming placeholder token/flag is okay, like for packs
-        match VitoApi::get_standard_versions(vito_token, is_experimental).await {
-            Ok(new_config) => {
-                debug!(
-                    "Successfully fetched {} standard profile definitions from API.",
-                    new_config.profiles.len()
-                );
-                {
-                    // Scope for the write lock
-                    let mut config_guard = self.config.write().await;
-                    *config_guard = new_config;
-                } // Write lock released here
-
-                // Save the newly fetched config
-                match self.save_config().await {
-                    Ok(_) => {
-                        info!("Successfully updated and saved Vito versions config from API.");
-                        Ok(())
-                    }
-                    Err(e) => {
-                        error!(
-                            "Fetched versions config from API, but failed to save it: {}",
-                            e
-                        );
-                        Err(e) // Return the save error
-                    }
-                }
-            }
-            Err(e) => {
-                error!("Failed to fetch Vito versions config from API: {}", e);
-                Err(e) // Return the fetch error
-            }
-        }
+        info!("fetch_and_update_config: standard profiles disabled");
+        let mut config_guard = self.config.write().await;
+        *config_guard = VitoVersionsConfig::default();
+        Ok(())
     }
 
     /// Loads the Vito versions configuration from a JSON file.
     /// Returns a default empty config if the file doesn't exist or cannot be parsed.
-    async fn load_config_internal(&self, path: &PathBuf) -> Result<VitoVersionsConfig> {
-        if !path.exists() {
-            info!(
-                "Vito versions config file not found at {:?}, using default empty config.",
-                path
-            );
-            return Ok(VitoVersionsConfig { profiles: vec![] });
-        }
-
-        let data = fs::read_to_string(path).await?;
-
-        match serde_json::from_str(&data) {
-            Ok(config) => Ok(config),
-            Err(e) => {
-                error!("Failed to parse vito_versions.json at {:?}: {}. Returning default empty config.", path, e);
-                // Return default instead of error to allow launcher to start even with broken config
-                Ok(VitoVersionsConfig { profiles: vec![] })
-            }
-        }
+    async fn load_config_internal(&self, _path: &PathBuf) -> Result<VitoVersionsConfig> {
+        info!("load_config_internal: standard profiles disabled");
+        Ok(VitoVersionsConfig { profiles: vec![] })
     }
 
     /// Saves the current configuration back to the JSON file.
