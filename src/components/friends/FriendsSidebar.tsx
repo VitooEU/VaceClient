@@ -116,13 +116,11 @@ export function FriendsSidebar() {
           <div className="p-4 border-b border-white/[0.08]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={openSettings}
-                  className="p-2 rounded-xl transition-all duration-200 hover:scale-105 glass-button-secondary"
-                  title={t('common.settings')}
+                <div
+                  className="p-2 rounded-xl glass-button-secondary text-white/80"
                 >
-                  <Icon icon="solar:settings-bold" className="w-5 h-5 text-white/80" />
-                </button>
+                  <Icon icon="solar:users-group-rounded-bold" className="w-5 h-5 text-white/80" />
+                </div>
                 <h2 className="text-lg font-bold text-white font-minecraft uppercase tracking-wide">
                   {t('friends.title')}
                 </h2>

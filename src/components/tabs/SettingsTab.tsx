@@ -368,7 +368,8 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
           />
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-2 rounded-xl transition-all duration-200 hover:scale-105 glass-button-secondary text-white/80 hover:text-white"
+            title={t('common.close')}
           >
             <Icon icon="solar:close-circle-bold" className="w-5 h-5" />
           </button>
