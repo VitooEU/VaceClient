@@ -342,21 +342,33 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
   return (
     <div className="h-full flex flex-col bg-transparent">
       {/* Settings Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
+      <div className="flex items-center justify-between px-6 py-3.5 border-b border-white/10 bg-white/[0.02] backdrop-blur-md flex-shrink-0 select-none">
         <div className="flex items-center gap-3">
-          <Icon icon={onlyTab ? tabConfig[0]?.icon ?? "solar:settings-bold" : "solar:settings-bold"} className="w-6 h-6 text-white/80" />
-          <h2 className="text-lg font-smallcaps text-white">
-            {onlyTab ? tabConfig[0]?.label ?? t("nav.settings") : t("nav.settings")}
-          </h2>
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center border shadow-inner transition-colors"
+            style={{
+              backgroundColor: `${accentColor.value}18`,
+              borderColor: `${accentColor.value}35`,
+            }}
+          >
+            <Icon
+              icon={onlyTab ? tabConfig[0]?.icon ?? "solar:settings-bold" : "solar:settings-bold"}
+              className="w-5 h-5"
+              style={{ color: accentColor.value }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <h2 className="text-base font-bold font-smallcaps uppercase tracking-wider text-white leading-tight drop-shadow-sm">
+              {onlyTab ? tabConfig[0]?.label ?? t("nav.settings") : t("nav.settings")}
+            </h2>
+            <span className="text-[11px] text-white/45 font-medium tracking-wide">
+              {t("settings.subtitle", "Vace Client Einstellungen")}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <ActionButton
-            id="open-directory"
-            label={t("settings.open_directory")}
-            icon="solar:folder-bold"
-            variant="highlight"
-            tooltip={t("settings.open_directory.tooltip")}
-            size="sm"
+
+        <div className="flex items-center gap-2.5">
+          <button
             onClick={async () => {
               try {
                 await openLauncherDirectory();
@@ -365,13 +377,19 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
                 toast.error(t("settings.open_directory.error", { error: parseErrorMessage(err) }));
               }
             }}
-          />
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 text-white/80 hover:text-white text-xs font-semibold tracking-wide transition-all duration-150 shadow-sm cursor-pointer active:translate-y-[1px]"
+            title={t("settings.open_directory.tooltip")}
+          >
+            <Icon icon="solar:folder-bold" className="w-4 h-4 text-white/60" />
+            <span className="font-smallcaps uppercase tracking-wider">{t("settings.open_directory")}</span>
+          </button>
+
           <button
             onClick={onClose}
-            className="p-2 rounded-xl transition-all duration-200 hover:scale-105 glass-button-secondary text-white/80 hover:text-white"
+            className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-red-600 border border-white/10 hover:border-red-500 flex items-center justify-center text-white/70 hover:text-white transition-all duration-150 shadow-sm cursor-pointer group active:translate-y-[1px]"
             title={t('common.close')}
           >
-            <Icon icon="solar:close-circle-bold" className="w-5 h-5" />
+            <Icon icon="lucide:x" className="w-4 h-4 transition-transform group-hover:scale-110" />
           </button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { cn } from "../../lib/utils";
 import { useThemeStore } from "../../store/useThemeStore";
+import { getVariantColors } from "../ui/design-system";
 
 interface NavItem {
   id: string;
@@ -29,6 +30,7 @@ export function BottomNavbar({
   const [active, setActive] = useState(activeItem || items[0]?.id);
   const accentColor = useThemeStore((state) => state.accentColor);
   const showNavLabels = useThemeStore((state) => state.showNavLabels);
+  const colors = getVariantColors("3d", accentColor);
 
   useEffect(() => {
     if (activeItem) {
@@ -58,8 +60,8 @@ export function BottomNavbar({
         className,
       )}
     >
-      {/* Launcher dock matching 1:1 Launch Game Button 3D aesthetic */}
-      <div className="flex items-center gap-2 p-2 rounded-2xl bg-[#0b0e17]/95 border border-white/20 shadow-[0_14px_44px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.2)] select-none">
+      {/* Translucent glass dock with blur */}
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-black/20 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.14)] select-none">
         {mainItems.map((item) => {
           const isActive = active === item.id;
           return (
@@ -67,24 +69,24 @@ export function BottomNavbar({
               key={item.id}
               onClick={() => handleItemClick(item.id, item.isAction, item.action)}
               className={cn(
-                "relative group flex items-center gap-2.5 px-4 h-[44px] rounded-xl text-xs font-black tracking-wider transition-all duration-75 select-none cursor-pointer",
+                "relative group flex items-center gap-2 px-3.5 h-[42px] !rounded-xl text-xs font-smallcaps font-black tracking-wider transition-all duration-75 select-none cursor-pointer active:translate-y-[1px] backdrop-blur-md",
                 isActive
-                  ? "text-white active:translate-y-[2px]"
-                  : "text-white/70 hover:text-white active:translate-y-[1px]",
+                  ? "border-2 border-b-4 text-white"
+                  : "border border-b-2 text-white/75 hover:text-white hover:border-white/20",
               )}
               style={
                 isActive
                   ? {
-                      background: accentColor.value,
-                      border: "1px solid rgba(255, 255, 255, 0.35)",
-                      borderBottom: "4px solid rgba(0, 0, 0, 0.45)",
-                      boxShadow: `0 4px 0 rgba(0,0,0,0.3), 0 6px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.45)`,
+                      backgroundColor: `${colors.main}30`,
+                      borderColor: `${colors.main}70`,
+                      borderBottomColor: colors.dark,
+                      boxShadow: `0 3px 0 rgba(0,0,0,0.3), 0 4px 12px ${colors.main}35, inset 0 1px 0 ${colors.light}50, inset 0 0 0 1px ${colors.main}20`,
                     }
                   : {
-                      background: "rgba(22, 26, 38, 0.85)",
-                      border: "1px solid rgba(255, 255, 255, 0.12)",
-                      borderBottom: "3px solid rgba(0, 0, 0, 0.45)",
-                      boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                      borderColor: "rgba(255, 255, 255, 0.10)",
+                      borderBottomColor: "rgba(0, 0, 0, 0.35)",
+                      boxShadow: "0 2px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)",
                     }
               }
               title={item.label}
@@ -92,8 +94,8 @@ export function BottomNavbar({
               <Icon
                 icon={item.icon}
                 className={cn(
-                  "w-4.5 h-4.5 transition-transform duration-150 text-white",
-                  isActive ? "scale-105 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" : "group-hover:scale-110",
+                  "w-4 h-4 transition-transform duration-150",
+                  isActive ? "text-white scale-105 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" : "text-white/80 group-hover:scale-110 group-hover:text-white",
                 )}
               />
               {showNavLabels && (
@@ -112,23 +114,23 @@ export function BottomNavbar({
 
         {actionItems.length > 0 && (
           <>
-            <div className="h-6 w-[1px] bg-white/20 mx-1" />
+            <div className="h-6 w-[1px] bg-white/15 mx-1" />
             {actionItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id, item.isAction, item.action)}
-                className="relative group flex items-center gap-2 px-3.5 h-[44px] rounded-xl text-xs font-bold tracking-wider text-white/70 hover:text-white transition-all duration-75 select-none active:translate-y-[1px] cursor-pointer"
+                className="relative group flex items-center gap-2 px-3 h-[42px] !rounded-xl text-xs font-smallcaps font-bold tracking-wider text-white/75 hover:text-white border border-b-2 transition-all duration-75 select-none active:translate-y-[1px] cursor-pointer backdrop-blur-md"
                 style={{
-                  background: "rgba(22, 26, 38, 0.85)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  borderBottom: "3px solid rgba(0, 0, 0, 0.45)",
-                  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  borderColor: "rgba(255, 255, 255, 0.10)",
+                  borderBottomColor: "rgba(0, 0, 0, 0.35)",
+                  boxShadow: "0 2px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)",
                 }}
                 title={item.label}
               >
                 <Icon
                   icon={item.icon}
-                  className="w-4.5 h-4.5 transition-transform duration-200 group-hover:rotate-45 text-white/80 group-hover:text-white"
+                  className="w-4 h-4 transition-transform duration-200 group-hover:rotate-45 text-white/80 group-hover:text-white"
                 />
                 {showNavLabels && (
                   <span className="font-smallcaps tracking-wide text-xs text-white/80 group-hover:text-white uppercase">

@@ -1,6 +1,6 @@
 # Third-party icon artwork
 
-The launcher bundles 314 icons from the sets below. The artwork is redistributed
+The launcher bundles 315 icons from the sets below. The artwork is redistributed
 unmodified; only the icons actually used are included, extracted from the `@iconify-json/*`
 packages by `scripts/generate-icon-bundle.mjs`.
 
@@ -8,7 +8,7 @@ GENERATED — run `yarn icons` to refresh.
 
 ## Solar (`solar`)
 
-- 250 icons used of 7401
+- 249 icons used of 7401
 - Author: [480 Design](https://www.figma.com/community/file/1166831539721848736)
 - Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (`CC-BY-4.0`)
 
@@ -62,7 +62,7 @@ GENERATED — run `yarn icons` to refresh.
 
 ## Lucide (`lucide`)
 
-- 1 icon used of 1745
+- 3 icons used of 1745
 - Author: [Lucide Contributors](https://github.com/lucide-icons/lucide)
 - Licence: [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE) (`ISC`)
 

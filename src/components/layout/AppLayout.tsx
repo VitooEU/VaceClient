@@ -714,39 +714,33 @@ function WindowControls({
   }
 
   return (
-    <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-xl p-1 shadow-sm" data-tauri-drag-region="false">
+    <div className="flex items-center gap-1 ml-4" data-tauri-drag-region="false">
       <div
         ref={minimizeRef as any}
         onClick={handleMinimize}
         data-tauri-drag-region="false"
-        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/[0.12] active:scale-95 transition-all duration-75 cursor-pointer rounded-lg"
+        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer rounded"
         title={t('window.minimize')}
       >
-        <svg className="w-3.5 h-3.5" viewBox="0 0 12 12" fill="none">
-          <rect x="2" y="5.5" width="8" height="1.2" rx="0.6" fill="currentColor" />
-        </svg>
+        <Icon icon="lucide:minus" className="w-4 h-4" />
       </div>
       <div
         ref={maximizeRef as any}
         onClick={handleMaximize}
         data-tauri-drag-region="false"
-        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/[0.12] active:scale-95 transition-all duration-75 cursor-pointer rounded-lg"
+        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer rounded"
         title={t('window.maximize')}
       >
-        <svg className="w-3.5 h-3.5" viewBox="0 0 12 12" fill="none">
-          <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-        </svg>
+        <Icon icon="lucide:square" className="w-3.5 h-3.5" />
       </div>
       <div
         ref={closeRef as any}
         onClick={handleClose}
         data-tauri-drag-region="false"
-        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.6)] active:scale-95 transition-all duration-75 cursor-pointer rounded-lg"
+        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-red-600 transition-colors cursor-pointer rounded"
         title={t('window.close')}
       >
-        <svg className="w-4 h-4" viewBox="0 0 12 12" fill="none">
-          <path d="M2.2 2.2L9.8 9.8M9.8 2.2L2.2 9.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <Icon icon="lucide:x" className="w-4 h-4" />
       </div>
     </div>
   );

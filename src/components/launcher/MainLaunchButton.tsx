@@ -39,12 +39,13 @@ export function MainLaunchButton({
   className,
   onVersionChange,
   versions,
-  maxWidth = "340px",
+  maxWidth = "300px",
   selectedVersionLabel,
   mainButtonWidth,
   mainButtonHeight,
 }: MainLaunchButtonProps) {
   const { t } = useTranslation();
+  // Local state for transient success message styling (can be further integrated if needed)
   const [transientSuccessActive, setTransientSuccessActive] = useState(false);
 
   const { selectedVersion, setSelectedVersion } = useVersionSelectionStore();
@@ -64,6 +65,8 @@ export function MainLaunchButton({
     },
   });
 
+
+  // Get profile-specific launch state from hook
   const isButtonLaunching = isLaunching;
   const buttonStatusMessage = statusMessage;
 
@@ -100,57 +103,77 @@ export function MainLaunchButton({
     }
   }, [defaultVersion, versions, selectedVersion, setSelectedVersion]);
 
+
+
+
   const handleLaunch = async () => {
     if (!selectedVersion) return;
     await hookHandleLaunch();
   };
 
+  const handleVersionChange = (version: string) => {
+    if (isButtonLaunching) return;
+    if (onVersionChange) {
+      onVersionChange(version);
+    }
+  };
+
   const handleOpenModal = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isButtonLaunching) return;
-    // Navigate to profiles tab to switch version
+
+    // Navigate to profiles tab instead of opening modal
     navigate("/profiles");
   };
 
+  const getMainButtonIcon = () => {
+    if (isButtonLaunching) {
+      return <Icon icon="solar:stop-bold" width="24" height="24" />;
+    }
+    return <Icon icon="solar:play-bold" width="24" height="24" />;
+  };
+
   const renderLaunchButtonContent = () => {
-    const actionText = isButtonLaunching ? (t('launch.cancel') || "Stop") : (t('launch.button') || "Launch");
+    const actionText = isButtonLaunching ? "Stop" : "Launch";
 
     let statusSubText: string | null | undefined = null;
-    let statusColorClass = "text-white/90";
+    let statusColorClass = "opacity-85";
 
     if (transientSuccessActive && buttonStatusMessage === t('launch.starting')) {
       statusSubText = buttonStatusMessage;
-      statusColorClass = "text-green-300 font-bold";
+      statusColorClass = "text-green-400";
     } else if (isButtonLaunching) {
-      statusSubText = buttonStatusMessage || t('launch.launching', 'Launching...');
-      statusColorClass = "text-white font-medium";
+      statusSubText = buttonStatusMessage || "Launching...";
+      statusColorClass =
+        buttonStatusMessage
+          ? "opacity-90 text-white"
+          : "opacity-75";
     } else if (buttonStatusMessage && launchState === LaunchState.ERROR) {
       statusSubText = buttonStatusMessage;
-      statusColorClass = "text-red-300 font-bold";
+      statusColorClass = "text-red-400";
     } else if (buttonStatusMessage) {
       statusSubText = buttonStatusMessage;
-      statusColorClass = "text-white/90";
+      statusColorClass = "opacity-85";
     }
 
     const displaySubText = statusSubText || selectedVersionLabel;
-
     return (
-      <div className="w-full flex flex-col items-center justify-center leading-none -translate-y-[3px]">
-        <span className="text-2xl font-black tracking-wider uppercase text-white drop-shadow">
-          {actionText}
-        </span>
+      <div className="w-full flex flex-col items-center justify-center leading-none -translate-y-[5px]">
+        <span className="text-3xl text-center">{actionText}</span>
         {displaySubText && (
-          <div className="mt-1 px-2.5 py-0.5 rounded-full bg-black/35 border border-white/20 flex items-center max-w-[210px] shadow-sm">
-            <span
-              className={cn(
-                "text-[11px] font-bold tracking-wide truncate normal-case leading-none",
-                statusColorClass
-              )}
-              title={typeof displaySubText === "string" ? displaySubText : undefined}
-            >
-              {displaySubText}
-            </span>
-          </div>
+          <span
+            className={cn(
+              "text-xs font-minecraft tracking-normal text-center normal-case whitespace-nowrap overflow-hidden text-ellipsis",
+              isButtonLaunching ? "max-w-64" : "",
+              statusColorClass
+            )}
+            style={isButtonLaunching ? { maxWidth: "16rem" } : undefined}
+            title={
+              typeof displaySubText === "string" ? displaySubText : undefined
+            }
+          >
+            {displaySubText}
+          </span>
         )}
       </div>
     );
@@ -165,7 +188,7 @@ export function MainLaunchButton({
 
   return (
     <div
-      className={cn("relative flex flex-col justify-center select-none", className)}
+      className={cn("relative flex flex-col justify-center", className)}
       style={{ maxWidth }}
     >
       <div className="flex flex-col gap-3">
@@ -179,10 +202,7 @@ export function MainLaunchButton({
             size="xl"
             icon={undefined}
             variant={getButtonVariant()}
-            className={cn(
-              "flex-1 !rounded-l-2xl !rounded-r-none !border !border-white/25 !border-r-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_6px_20px_rgba(0,0,0,0.35)] hover:!border-white/40 transition-all",
-              mainButtonWidth
-            )}
+            className={cn("flex-1 rounded-r-none", mainButtonWidth)}
             heightClassName={mainButtonHeight}
           >
             {renderLaunchButtonContent()}
@@ -192,18 +212,14 @@ export function MainLaunchButton({
             onClick={handleOpenModal}
             disabled={isButtonLaunching || !versions || versions.length === 0}
             size="xl"
-            className={cn(
-              "!rounded-r-2xl !rounded-l-none !border !border-white/25 !border-l-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_6px_20px_rgba(0,0,0,0.35)] hover:!border-white/40 !px-4 transition-all",
-              mainButtonHeight
-            )}
+            className={cn("rounded-l-none border-l-0", mainButtonHeight)}
             icon={
-              <Icon icon="solar:alt-arrow-down-bold" width="22" height="22" />
+              <Icon icon="solar:alt-arrow-down-bold" width="24" height="24" />
             }
             variant={
               getButtonVariant() === "destructive" ? "destructive" : "3d"
             }
-            title={t('launcher.select_version', 'Version wechseln')}
-            aria-label={t('launcher.select_version', 'Version wechseln')}
+            aria-label={t('launcher.select_version')}
           />
 
           <div className="absolute -top-2 -left-2 w-7 h-7 z-10 pointer-events-auto">
