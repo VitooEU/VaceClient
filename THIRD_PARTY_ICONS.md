@@ -1,6 +1,6 @@
 # Third-party icon artwork
 
-The launcher bundles 319 icons from the sets below. The artwork is redistributed
+The launcher bundles 314 icons from the sets below. The artwork is redistributed
 unmodified; only the icons actually used are included, extracted from the `@iconify-json/*`
 packages by `scripts/generate-icon-bundle.mjs`.
 
@@ -8,13 +8,13 @@ GENERATED — run `yarn icons` to refresh.
 
 ## Solar (`solar`)
 
-- 251 icons used of 7401
+- 250 icons used of 7401
 - Author: [480 Design](https://www.figma.com/community/file/1166831539721848736)
 - Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (`CC-BY-4.0`)
 
 ## Pixel Icon (`pixel`)
 
-- 10 icons used of 578
+- 9 icons used of 578
 - Author: [HackerNoon](https://github.com/hackernoon/pixel-icon-library)
 - Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (`CC-BY-4.0`)
 
@@ -60,15 +60,9 @@ GENERATED — run `yarn icons` to refresh.
 - Author: [Utkarsh Verma](https://github.com/n3r4zzurr0/svg-spinners)
 - Licence: [MIT](https://github.com/n3r4zzurr0/svg-spinners/blob/main/LICENSE) (`MIT`)
 
-## Noto Emoji (`noto`)
-
-- 1 icon used of 3710
-- Author: [Google Inc](https://github.com/googlefonts/noto-emoji)
-- Licence: [Apache 2.0](https://github.com/googlefonts/noto-emoji/blob/main/svg/LICENSE) (`Apache-2.0`)
-
 ## Lucide (`lucide`)
 
-- 3 icons used of 1745
+- 1 icon used of 1745
 - Author: [Lucide Contributors](https://github.com/lucide-icons/lucide)
 - Licence: [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE) (`ISC`)
 

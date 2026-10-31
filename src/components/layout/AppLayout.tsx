@@ -6,8 +6,6 @@ import { gsap } from "gsap";
 import { Icon } from "@iconify/react";
 
 import { BottomNavbar } from "../navigation/BottomNavbar";
-import { UserProfileBar } from ".././header/UserProfileBar";
-import { NavigationHistory } from "../ui/NavigationHistory";
 import { useThemeStore } from "../../store/useThemeStore";
 import {
   BACKGROUND_EFFECTS,
@@ -30,13 +28,8 @@ import { useSnowEffectStore } from "../../store/snow-effect-store";
 import { useLauncherTheme } from "../../hooks/useLauncherTheme";
 import * as ConfigService from "../../services/launcher-config-service";
 import { SocialsModal } from "../modals/SocialsModal";
-import { FriendsSidebar } from "../friends/FriendsSidebar";
-// TODO: Re-enable when WebSocket is stable
-// import { useFriendsWebSocket } from "../../hooks/useFriendsWebSocket";
-import { useFriendsStore } from "../../store/friends-store";
 import { useClipsStore } from "../../store/clips-store";
 import { closeClipEditorThen } from "../../services/clip-service";
-import { useChatStore } from "../../store/chat-store";
 import { checkUpdateAvailable, downloadAndInstallUpdate } from "../../services/vtc-service";
 import type { UpdateInfo } from "../../types/updater";
 import { ProfileWizardV2Modal } from "../modals/ProfileWizardV2Modal";
@@ -99,26 +92,6 @@ export function AppLayout({
   const { isBackgroundAnimationEnabled, accentColor: themeAccentColor, accentColor, borderRadius } = useThemeStore();
   const { isEnabled: isSnowEnabled } = useSnowEffectStore();
   const { selectedTheme, isThemeActive } = useLauncherTheme();
-  const { connectWebSocket, loadCurrentUser, loadFriends } = useFriendsStore();
-  const { loadChats } = useChatStore();
-
-  // TODO: Re-enable when WebSocket is stable
-  // useFriendsWebSocket();
-
-  useEffect(() => {
-    const initFriends = async () => {
-      try {
-        await loadCurrentUser();
-        await loadFriends();
-        await loadChats();
-        // TODO: Re-enable when WebSocket is stable
-        // await connectWebSocket();
-      } catch (e) {
-        // Silently fail - user might not be logged in yet
-      }
-    };
-    initFriends();
-  }, []);
 
   const getComplementaryBackground = () => {
     const hexToRgb = (hex: string) => {
@@ -335,7 +308,7 @@ export function AppLayout({
   return (
     <div
       ref={launcherRef}
-      className="h-screen w-full liquid-glass-shell overflow-hidden relative flex flex-col border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.8)]"
+      className="h-screen w-full liquid-glass-shell overflow-hidden relative flex flex-col"
       style={{
         backgroundColor: "#0d0e12",
         backgroundSize: "cover",
@@ -343,7 +316,6 @@ export function AppLayout({
         backgroundImage: isCustomMediaVisible 
           ? `linear-gradient(to bottom right, rgba(20,20,25,0.4), rgba(10,10,12,0.8))`
           : `url('/launcher-bg.png')`,
-        borderRadius: "4px",
         transform: "translateZ(0)",
         willChange: "auto",
       }}
@@ -387,7 +359,6 @@ export function AppLayout({
       <ProfileSettingsModal />
       <SettingsModal />
       <ProfileDuplicateModal />
-      <FriendsSidebar />
     </div>
   );
 }
@@ -411,13 +382,13 @@ function BorderGlowEffects({ accentColor }: { accentColor: string }) {
   );
 }
 
-interface HeaderBarProps {
-  minimizeRef: React.RefObject<HTMLDivElement>;
-  maximizeRef: React.RefObject<HTMLDivElement>;
-  closeRef: React.RefObject<HTMLDivElement>;
+export interface HeaderBarProps {
+  minimizeRef?: React.RefObject<HTMLDivElement | null>;
+  maximizeRef?: React.RefObject<HTMLDivElement | null>;
+  closeRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
+export function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
   const { t } = useTranslation();
   const accentColor = useThemeStore((state) => state.accentColor);
   const macWindowControls = useThemeStore((state) => state.macWindowControls);
@@ -515,14 +486,28 @@ function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
 
   return (
     <div
-      className="h-16 flex-shrink-0 liquid-glass-header flex items-center justify-between px-6 z-10 relative"
+      className="h-16 flex-shrink-0 liquid-glass-header flex items-center justify-between px-6 z-20 relative select-none"
       data-tauri-drag-region
     >
+
+      {/* Dynamic top edge specular highlight line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none z-20"
+        style={{
+          background: `linear-gradient(90deg, transparent 0%, ${accentColor.value}70 20%, rgba(255, 255, 255, 0.35) 50%, ${accentColor.value}70 80%, transparent 100%)`,
+        }}
+      />
+      {/* Subtle dynamic ambient glow */}
+      <div
+        className="absolute -top-12 left-12 w-72 h-20 rounded-full pointer-events-none blur-3xl opacity-25 z-0"
+        style={{ background: accentColor.value }}
+      />
+
       {macWindowControls ? (
         /* macOS mode: buttons left, title centered absolutely */
         <>
           {/* Left: macOS native traffic light buttons */}
-          <div className="flex items-center gap-2 group z-10 select-none" data-tauri-drag-region="false">
+          <div className="flex items-center gap-2 group z-10 select-none bg-white/[0.03] border border-white/[0.06] rounded-xl px-2.5 py-1.5 shadow-sm" data-tauri-drag-region="false">
             {/* Close (Red) */}
             <div
               ref={closeRef}
@@ -564,48 +549,58 @@ function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
           </div>
 
           {/* Center: VaceClient title */}
-          <div className="absolute left-0 right-0 flex justify-center pointer-events-none" data-tauri-drag-region>
-            <h1
-              className="font-smallcaps text-2xl tracking-wider font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] pointer-events-auto"
-              data-tauri-drag-region
-            >
-              VaceClient
-            </h1>
+          <div className="absolute left-0 right-0 flex items-center justify-center pointer-events-none" data-tauri-drag-region>
+            <div className="flex items-center gap-2.5 pointer-events-auto" data-tauri-drag-region>
+              <img
+                src="/v.png"
+                alt="Vace Logo"
+                className="w-7 h-7 object-contain select-none pointer-events-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]"
+              />
+              <h1
+                className="font-smallcaps text-[21px] tracking-wider font-black text-white flex items-center gap-1.5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]"
+                data-tauri-drag-region
+              >
+                <span className="text-white font-black">Vace</span>
+                <span className="text-white/90 font-bold">Client</span>
+              </h1>
+            </div>
           </div>
 
-          {/* Right: profile */}
-          <div className="flex items-center gap-4 z-10">
-            <UserProfileBar />
-          </div>
+          {/* Right: empty spacer */}
+          <div className="w-16" />
         </>
       ) : (
         /* Normal mode: logo + title left, controls right */
         <>
-          <div className="flex items-center gap-4" data-tauri-drag-region>
-            {/* Brand Logo - Ganz oben links */}
+          <div className="flex items-center gap-4 z-10" data-tauri-drag-region>
+            {/* Brand Logo & Title */}
             <div className="flex items-center gap-3 select-none" data-tauri-drag-region>
-              <img
-                src="/v.png"
-                alt="V Logo"
-                className="w-10 h-10 object-contain select-none pointer-events-none drop-shadow hover:scale-105 transition-transform"
-              />
-              <div className="flex flex-col items-start">
-                <div className="flex items-center gap-2.5">
+              <div className="relative flex items-center justify-center cursor-pointer select-none" data-tauri-drag-region="false">
+                <img
+                  src="/v.png"
+                  alt="Vace Logo"
+                  className="w-9 h-9 object-contain select-none pointer-events-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] hover:scale-105 transition-transform duration-150"
+                />
+              </div>
+
+              <div className="flex flex-col items-start justify-center">
+                <div className="flex items-center gap-2">
                   <h1
-                    className="font-smallcaps text-2xl tracking-wider font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+                    className="font-smallcaps text-[21px] tracking-wider font-black text-white flex items-center gap-1.5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]"
                     data-tauri-drag-region
                   >
-                    VaceClient
+                    <span className="text-white font-black">Vace</span>
+                    <span className="text-white/90 font-bold">Client</span>
                   </h1>
                   {availableUpdate && (
                     <Tooltip content={isUpdating ? t('header.update.tooltip_updating') : t('header.update.tooltip_available', { version: availableUpdate.version })}>
                       <div
-                        className={isUpdating ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                        className={isUpdating ? 'cursor-not-allowed opacity-50 p-1' : 'cursor-pointer p-1 rounded-lg hover:bg-white/10 transition-colors'}
                         onClick={handleUpdateClick}
                       >
                         <Icon
                           icon="solar:download-minimalistic-bold"
-                          className={`w-6 h-6 transition-colors ${isUpdating ? 'animate-pulse' : ''}`}
+                          className={`w-5 h-5 transition-colors ${isUpdating ? 'animate-pulse' : ''}`}
                           style={{ color: accentColor.value }}
                         />
                       </div>
@@ -615,15 +610,9 @@ function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
                 <HeaderInfoCarousel version={appVersion} />
               </div>
             </div>
-
-            <div className="h-6 w-[1px] bg-white/10 mx-1" />
-
-            <NavigationHistory />
           </div>
 
-          <div className="flex items-center gap-4">
-            <UserProfileBar />
-
+          <div className="flex items-center gap-3 z-10" data-tauri-drag-region="false">
             <WindowControls
               minimizeRef={minimizeRef}
               maximizeRef={maximizeRef}
@@ -637,9 +626,9 @@ function HeaderBar({ minimizeRef, maximizeRef, closeRef }: HeaderBarProps) {
 }
 
 interface WindowControlsProps {
-  minimizeRef: React.RefObject<HTMLDivElement>;
-  maximizeRef: React.RefObject<HTMLDivElement>;
-  closeRef: React.RefObject<HTMLDivElement>;
+  minimizeRef?: React.RefObject<HTMLDivElement | null>;
+  maximizeRef?: React.RefObject<HTMLDivElement | null>;
+  closeRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 function WindowControls({
@@ -650,12 +639,39 @@ function WindowControls({
   const { t } = useTranslation();
   const macWindowControls = useThemeStore((state) => state.macWindowControls);
 
+  const handleMinimize = async () => {
+    try {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().minimize();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleMaximize = async () => {
+    try {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().toggleMaximize();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleClose = async () => {
+    try {
+      await closeClipEditorThen(() => exit(0)).catch(() => exit(0));
+    } catch (e) {
+      exit(0);
+    }
+  };
+
   if (macWindowControls) {
     return (
-      <div className="flex items-center gap-2 ml-4 group select-none" data-tauri-drag-region="false">
+      <div className="flex items-center gap-2 ml-4 group select-none bg-white/[0.04] border border-white/[0.08] rounded-xl px-2.5 py-1.5 shadow-sm" data-tauri-drag-region="false">
         {/* macOS Close (Red) */}
         <div
-          ref={closeRef}
+          ref={closeRef as any}
+          onClick={handleClose}
           data-tauri-drag-region="false"
           className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
           style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
@@ -668,7 +684,8 @@ function WindowControls({
         </div>
         {/* macOS Minimize (Yellow) */}
         <div
-          ref={minimizeRef}
+          ref={minimizeRef as any}
+          onClick={handleMinimize}
           data-tauri-drag-region="false"
           className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
           style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
@@ -680,7 +697,8 @@ function WindowControls({
         </div>
         {/* macOS Maximize (Green) */}
         <div
-          ref={maximizeRef}
+          ref={maximizeRef as any}
+          onClick={handleMaximize}
           data-tauri-drag-region="false"
           className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] active:brightness-90 hover:brightness-110 flex items-center justify-center cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] flex-shrink-0 transition-all duration-75"
           style={{ width: "12px", height: "12px", aspectRatio: "1 / 1" }}
@@ -696,30 +714,39 @@ function WindowControls({
   }
 
   return (
-    <div className="flex items-center gap-1 ml-4 bg-white/[0.03] border border-white/[0.06] rounded-xl p-0.5" data-tauri-drag-region="false">
+    <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-xl p-1 shadow-sm" data-tauri-drag-region="false">
       <div
-        ref={minimizeRef}
+        ref={minimizeRef as any}
+        onClick={handleMinimize}
         data-tauri-drag-region="false"
-        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-75 cursor-pointer rounded-xl"
+        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/[0.12] active:scale-95 transition-all duration-75 cursor-pointer rounded-lg"
         title={t('window.minimize')}
       >
-        <Icon icon="lucide:minus" className="w-3.5 h-3.5" />
+        <svg className="w-3.5 h-3.5" viewBox="0 0 12 12" fill="none">
+          <rect x="2" y="5.5" width="8" height="1.2" rx="0.6" fill="currentColor" />
+        </svg>
       </div>
       <div
-        ref={maximizeRef}
+        ref={maximizeRef as any}
+        onClick={handleMaximize}
         data-tauri-drag-region="false"
-        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-75 cursor-pointer rounded-xl"
+        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/[0.12] active:scale-95 transition-all duration-75 cursor-pointer rounded-lg"
         title={t('window.maximize')}
       >
-        <Icon icon="lucide:square" className="w-3 h-3" />
+        <svg className="w-3.5 h-3.5" viewBox="0 0 12 12" fill="none">
+          <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+        </svg>
       </div>
       <div
-        ref={closeRef}
+        ref={closeRef as any}
+        onClick={handleClose}
         data-tauri-drag-region="false"
-        className="w-8 h-7 flex items-center justify-center text-white/50 hover:text-white hover:bg-red-500/25 transition-all duration-75 cursor-pointer rounded-xl"
+        className="w-10 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.6)] active:scale-95 transition-all duration-75 cursor-pointer rounded-lg"
         title={t('window.close')}
       >
-        <Icon icon="lucide:x" className="w-3.5 h-3.5" />
+        <svg className="w-4 h-4" viewBox="0 0 12 12" fill="none">
+          <path d="M2.2 2.2L9.8 9.8M9.8 2.2L2.2 9.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
       </div>
     </div>
   );

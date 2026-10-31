@@ -1,0 +1,1 @@
+import{a7 as s,Z as t,i as c}from"./globals-DcyCeelM.js";var n=s();const i=t(n),a=(o,r)=>{console[o](r),c("log_message_command",{level:o,message:r}).catch(()=>{})},m=o=>a("info",o),g=o=>a("warn",o),l=o=>a("error",o);export{m as a,g as b,a as c,i,l,n as r};

@@ -20,7 +20,6 @@ import { useQualitySettingsStore } from '../../store/quality-settings-store';
 import { useThemeStore } from '../../store/useThemeStore';
 
 const NO_ACCOUNT_SKIN_URL = "/skins/steve.png";
-const RIG_SHADOW = 'drop-shadow(5px 10px 5px rgba(0,0,0,0.75))';
 const NO_COSMETICS: SnapshotCosmetic[] = [];
 
 export const PLAYER_RIG_WIDTH = 225;
@@ -29,16 +28,19 @@ export const PLAYER_RIG_HEIGHT = 450;
 const CANVAS_WIDTH = 1040;
 const CANVAS_HEIGHT = 860;
 
+const isLinux = typeof navigator !== "undefined" && /linux/i.test(navigator.userAgent);
+
 const canvasStyle: React.CSSProperties = {
   position: "absolute",
   left: "50%",
   top: "50%",
-  transform: "translate(-50%, -50%)",
+  transform: "translate(-50%, -50%) translateZ(0)",
   width: `${CANVAS_WIDTH}px`,
   height: `${CANVAS_HEIGHT}px`,
   maxWidth: "none",
   pointerEvents: "none",
-  filter: RIG_SHADOW,
+  opacity: 0.94,
+  willChange: "transform",
 };
 
 const flatStyle: React.CSSProperties = {
@@ -47,7 +49,7 @@ const flatStyle: React.CSSProperties = {
   width: "100%",
   height: "100%",
   pointerEvents: "none",
-  filter: RIG_SHADOW,
+  opacity: 0.94,
 };
 
 interface PlayerRigProps {
@@ -151,6 +153,15 @@ export function PlayerRig({ playerName, outline }: PlayerRigProps) {
         height: `${PLAYER_RIG_HEIGHT}px`,
       }}
     >
+      {/* Subtle grounded ambient shadow under player feet */}
+      <div
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 h-8 rounded-full pointer-events-none z-0"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 50%, transparent 75%)",
+          filter: "blur(4px)",
+        }}
+      />
+
       {animated ? (
         <WebGLBoundary label="player rig" fallback={stillRig}>
         <SkinRenderer
@@ -165,8 +176,8 @@ export function PlayerRig({ playerName, outline }: PlayerRigProps) {
           nametag={rigNametag}
           loading={loading}
           paused={!isWindowFocused}
-          fps={60}
-          maxDpr={1.5}
+          fps={isLinux ? 45 : 60}
+          maxDpr={isLinux ? 1.0 : 1.5}
           skeletonColor={accentColor.value}
           className="bg-transparent"
           style={canvasStyle}

@@ -112,7 +112,11 @@ export function App() {
   }, [loadLegalStatus, language, acceptedLegacyTerms]);
 
   const ready = accountsLoaded && legalChecked;
-  const showWelcome = ready && !activeAccount && !welcomeSkipped;
+  const isRealAccount =
+    !!activeAccount &&
+    activeAccount.id !== "c0ffee00-0000-0000-0000-000000000000" &&
+    activeAccount.access_token !== "offline";
+  const showWelcome = ready && !isRealAccount && !welcomeSkipped;
 
   const activeTab = location.pathname.substring(1) || "play";
 
@@ -570,10 +574,6 @@ export function App() {
 
   const handleNavChange = async (tabId: string) => {
     if (tabId === "settings") {
-      // Friends-Sidebar schließen bevor Settings öffnet
-      const { isSidebarOpen, toggleSidebar } = (await import("./store/friends-store")).useFriendsStore.getState();
-      if (isSidebarOpen) toggleSidebar();
-
       useSettingsModalStore.getState().open();
       if (analyticsConsent.decision === 'accepted') {
         trackEvent('sidebar_tab_clicked', { tab_name: 'settings' }).catch(console.error);
@@ -598,7 +598,7 @@ export function App() {
 
   return (
     <FlagsmithProvider flagsmith={flagsmith}>
-      <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <div className="flex flex-col h-screen w-screen overflow-hidden launcher-window-frame bg-[#0d0e12]">
         <ThemeInitializer />
         <ScrollbarProvider />
         <GlobalToaster />

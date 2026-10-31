@@ -58,7 +58,8 @@ export function BottomNavbar({
         className,
       )}
     >
-      <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl glass-pill-nav">
+      {/* Launcher dock matching 1:1 Launch Game Button 3D aesthetic */}
+      <div className="flex items-center gap-2 p-2 rounded-2xl bg-[#0b0e17]/95 border border-white/20 shadow-[0_14px_44px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.2)] select-none">
         {mainItems.map((item) => {
           const isActive = active === item.id;
           return (
@@ -66,20 +67,24 @@ export function BottomNavbar({
               key={item.id}
               onClick={() => handleItemClick(item.id, item.isAction, item.action)}
               className={cn(
-                "relative group flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ease-out select-none active:scale-95",
+                "relative group flex items-center gap-2.5 px-4 h-[44px] rounded-xl text-xs font-black tracking-wider transition-all duration-75 select-none cursor-pointer",
                 isActive
-                  ? "text-white scale-105"
-                  : "text-white/60 hover:text-white hover:bg-white/[0.06] hover:scale-102",
+                  ? "text-white active:translate-y-[2px]"
+                  : "text-white/70 hover:text-white active:translate-y-[1px]",
               )}
               style={
                 isActive
                   ? {
-                      backgroundColor: `${accentColor.value}26`,
-                      border: `1px solid ${accentColor.value}80`,
-                      boxShadow: `0 4px 16px ${accentColor.value}40, 0 1px 0 rgba(255, 255, 255, 0.15) inset`,
+                      background: accentColor.value,
+                      border: "1px solid rgba(255, 255, 255, 0.35)",
+                      borderBottom: "4px solid rgba(0, 0, 0, 0.45)",
+                      boxShadow: `0 4px 0 rgba(0,0,0,0.3), 0 6px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.45)`,
                     }
                   : {
-                      border: "1px solid transparent",
+                      background: "rgba(22, 26, 38, 0.85)",
+                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      borderBottom: "3px solid rgba(0, 0, 0, 0.45)",
+                      boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.12)",
                     }
               }
               title={item.label}
@@ -87,26 +92,19 @@ export function BottomNavbar({
               <Icon
                 icon={item.icon}
                 className={cn(
-                  "w-5 h-5 transition-transform duration-300 ease-out",
-                  isActive ? "scale-110 drop-shadow-[0_0_8px_currentColor]" : "group-hover:scale-110",
+                  "w-4.5 h-4.5 transition-transform duration-150 text-white",
+                  isActive ? "scale-105 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" : "group-hover:scale-110",
                 )}
-                style={isActive ? { color: accentColor.value } : undefined}
               />
               {showNavLabels && (
                 <span
                   className={cn(
-                    "font-smallcaps tracking-wide text-xs transition-all duration-200",
-                    isActive ? "font-bold text-white scale-105" : "text-white/70",
+                    "font-smallcaps tracking-wide text-xs transition-colors duration-150 uppercase",
+                    isActive ? "font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" : "text-white/80 group-hover:text-white",
                   )}
                 >
                   {item.label}
                 </span>
-              )}
-              {isActive && (
-                <span
-                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full transition-all duration-300 animate-pulse shadow-[0_0_8px_currentColor]"
-                  style={{ backgroundColor: accentColor.value }}
-                />
               )}
             </button>
           );
@@ -114,20 +112,26 @@ export function BottomNavbar({
 
         {actionItems.length > 0 && (
           <>
-            <div className="h-6 w-[1px] bg-white/10 mx-1" />
+            <div className="h-6 w-[1px] bg-white/20 mx-1" />
             {actionItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id, item.isAction, item.action)}
-                className="relative group flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/[0.05] transition-all duration-200 select-none border border-transparent hover:border-white/10"
+                className="relative group flex items-center gap-2 px-3.5 h-[44px] rounded-xl text-xs font-bold tracking-wider text-white/70 hover:text-white transition-all duration-75 select-none active:translate-y-[1px] cursor-pointer"
+                style={{
+                  background: "rgba(22, 26, 38, 0.85)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  borderBottom: "3px solid rgba(0, 0, 0, 0.45)",
+                  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+                }}
                 title={item.label}
               >
                 <Icon
                   icon={item.icon}
-                  className="w-5 h-5 transition-transform duration-200 group-hover:rotate-45"
+                  className="w-4.5 h-4.5 transition-transform duration-200 group-hover:rotate-45 text-white/80 group-hover:text-white"
                 />
                 {showNavLabels && (
-                  <span className="font-smallcaps tracking-wide text-xs text-white/70">
+                  <span className="font-smallcaps tracking-wide text-xs text-white/80 group-hover:text-white uppercase">
                     {item.label}
                   </span>
                 )}

@@ -156,12 +156,7 @@ use commands::friends_command::{
 async fn main() {
     #[cfg(target_os = "linux")]
     {
-        if std::env::var("GDK_BACKEND").is_err() {
-            std::env::set_var("GDK_BACKEND", "x11");
-        }
-        std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
-        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
-        std::env::set_var("WEBKIT_FORCE_COMPOSITING_MODE", "1");
+        // Allow WebKitGTK to use hardware DMA-BUF and native compositing without software fallback stalls
     }
 
     if let Err(e) = logging::setup_logging().await {
