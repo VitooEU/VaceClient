@@ -342,10 +342,10 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
   return (
     <div className="h-full flex flex-col bg-transparent">
       {/* Settings Header */}
-      <div className="flex items-center justify-between px-6 py-3.5 border-b border-white/10 bg-white/[0.02] backdrop-blur-md flex-shrink-0 select-none">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-black/25 backdrop-blur-xl flex-shrink-0 select-none">
         <div className="flex items-center gap-3">
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center border shadow-inner transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border shadow-inner transition-colors"
             style={{
               backgroundColor: `${accentColor.value}18`,
               borderColor: `${accentColor.value}35`,
@@ -377,7 +377,7 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
                 toast.error(t("settings.open_directory.error", { error: parseErrorMessage(err) }));
               }
             }}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 text-white/80 hover:text-white text-xs font-semibold tracking-wide transition-all duration-150 shadow-sm cursor-pointer active:translate-y-[1px]"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 text-white/80 hover:text-white text-xs font-semibold tracking-wide transition-all duration-150 shadow-sm cursor-pointer active:translate-y-[1px]"
             title={t("settings.open_directory.tooltip")}
           >
             <Icon icon="solar:folder-bold" className="w-4 h-4 text-white/60" />
@@ -394,8 +394,9 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 p-4 gap-2 overflow-hidden">
-        <div className="w-56 flex flex-col flex-shrink-0">
+      <div className="flex flex-1 p-5 gap-4 overflow-hidden">
+        {/* Settings Sidebar */}
+        <div className="w-64 flex flex-col flex-shrink-0 bg-white/[0.02] backdrop-blur-md rounded-2xl border border-white/[0.08] p-3 shadow-sm">
           <div className="px-1 pb-3">
             <SearchWithFilters
               placeholder={t("common.search")}
@@ -407,30 +408,30 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
               className="w-full"
             />
           </div>
-          <div ref={sidebarListRef} className="space-y-0 flex-1 overflow-y-auto custom-scrollbar">
+          <div ref={sidebarListRef} className="space-y-1 flex-1 overflow-y-auto custom-scrollbar pr-1">
             {tabConfig.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <div key={tab.id}>
                   <button
                     className={cn(
-                      "w-full text-left px-3 py-2.5 rounded-xl transition-all duration-200 border-0 outline-none flex items-center gap-3",
+                      "w-full text-left px-3.5 py-2.5 rounded-xl transition-all duration-200 border outline-none flex items-center gap-3",
                       isActive
-                        ? "text-white bg-white/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.2)]"
-                        : "bg-transparent text-white/60 hover:bg-white/[0.05] hover:text-white/90",
+                        ? "text-white bg-white/[0.08] border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+                        : "bg-transparent border-transparent text-white/60 hover:bg-white/[0.04] hover:text-white/90",
                     )}
                     style={isActive ? { borderLeft: `3px solid ${accentColor.value}` } : undefined}
                     onClick={() => selectTab(tab.id)}
                   >
                     <Icon
                       icon={tab.icon}
-                      className="w-6 h-6 transition-colors duration-200"
+                      className="w-5 h-5 transition-colors duration-200"
                       style={{ color: isActive ? accentColor.value : undefined }}
                     />
                     <span
                       className={cn(
-                        "font-smallcaps text-lg transition-colors duration-200",
-                        isActive && "font-medium",
+                        "font-smallcaps text-base transition-colors duration-200",
+                        isActive ? "font-bold text-white" : "font-medium",
                       )}
                     >
                       {tab.label}
@@ -438,7 +439,7 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
                   </button>
 
                   {isActive && !sidebarQuery && tab.children && (
-                    <div className="flex flex-col mt-1 ml-5 border-l border-white/10">
+                    <div className="flex flex-col mt-1 ml-5 border-l border-white/10 my-1">
                       {tab.children.map((child) => {
                         const childActive = activeSection === child.id;
                         return (
@@ -446,9 +447,9 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
                             key={child.id}
                             data-section-id={child.id}
                             className={cn(
-                              "w-full text-left pl-4 pr-2 py-1.5 -ml-px border-l-2 outline-none font-smallcaps text-base transition-[color,border-color] duration-150",
+                              "w-full text-left pl-4 pr-2 py-1.5 -ml-px border-l-2 outline-none font-smallcaps text-sm transition-[color,border-color] duration-150",
                               childActive
-                                ? "text-white"
+                                ? "text-white font-medium"
                                 : "border-transparent text-white/40 hover:text-white/75",
                             )}
                             style={childActive ? { borderColor: accentColor.value } : undefined}
@@ -466,14 +467,11 @@ export function SettingsTab({ onClose }: SettingsTabProps) {
           </div>
         </div>
 
-        <div className="flex items-center">
-          <div className="border-l border-white/10 mx-4 my-3 h-[85%]"></div>
-        </div>
-
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Settings Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white/[0.02] backdrop-blur-md rounded-2xl border border-white/[0.08] shadow-sm">
           <div
             ref={contentRef}
-            className="flex-1 py-2 px-5 overflow-y-auto overflow-x-hidden custom-scrollbar min-w-0"
+            className="flex-1 py-4 px-6 overflow-y-auto overflow-x-hidden custom-scrollbar min-w-0"
           >
             <SettingsConfigProvider value={{ config, tempConfig, setTempConfig, saving }}>
               <SettingsSearchContext.Provider value={sidebarQuery}>

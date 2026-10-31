@@ -11,16 +11,16 @@ export function SettingsModal() {
 
   return (
     <>
-      {/* Blur Backdrop — identisch zu FriendsSidebar (z-40 backdrop, z-50 panel) */}
+      {/* Blur Backdrop */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] transition-opacity duration-300",
+          "fixed inset-0 bg-black/50 backdrop-blur-md z-[999] transition-opacity duration-300",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={close}
       />
 
-      {/* Settings Panel — gleiche Slide-Animation & gleiches Design wie FriendsSidebar */}
+      {/* Settings Panel — Transparentes Glas-Design mit Blur, passend zum Client */}
       <div
         className={cn(
           "fixed top-0 right-0 h-full flex flex-col z-[1000]",
@@ -29,11 +29,11 @@ export function SettingsModal() {
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         style={{
-          background: "linear-gradient(180deg, rgba(16, 18, 25, 0.96) 0%, rgba(12, 13, 18, 0.98) 100%)",
-          borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "-12px 0 40px rgba(0, 0, 0, 0.7), inset 1px 0 0 rgba(255, 255, 255, 0.05)",
-          backdropFilter: "blur(24px) saturate(1.4)",
-          WebkitBackdropFilter: "blur(24px) saturate(1.4)",
+          background: "rgba(10, 11, 16, 0.65)",
+          borderLeft: "1px solid rgba(255, 255, 255, 0.12)",
+          boxShadow: "-16px 0 50px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 255, 255, 0.08)",
+          backdropFilter: "blur(32px) saturate(1.8)",
+          WebkitBackdropFilter: "blur(32px) saturate(1.8)",
         }}
       >
         {isOpen && <SettingsTab onClose={close} />}
