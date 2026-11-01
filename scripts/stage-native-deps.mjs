@@ -57,6 +57,12 @@ if (process.platform !== "win32") {
   process.exit(0);
 }
 
+const ffmpegBin = path.join(srcTauri, "third-party", "ffmpeg", "bin");
+if (!fs.existsSync(ffmpegBin)) {
+  console.log("Native capture dependencies not present; skipping capture runtime staging.");
+  process.exit(0);
+}
+
 console.log(`\nStaging capture binaries (${profile})`);
 
 step("building vito-capture");

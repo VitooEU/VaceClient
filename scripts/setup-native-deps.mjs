@@ -91,12 +91,16 @@ if (typeof fetch !== "function") {
 
 console.log("\nNative capture dependencies");
 
-if (!force && isCurrent()) {
-  writeNotices();
-  ok(`${ARCHIVE.label} (already there)`);
-} else {
-  await install();
-  ok(ARCHIVE.label);
+try {
+  if (!force && isCurrent()) {
+    writeNotices();
+    ok(`${ARCHIVE.label} (already there)`);
+  } else {
+    await install();
+    ok(ARCHIVE.label);
+  }
+} catch (err) {
+  console.warn(`  ! ${ARCHIVE.label} unavailable (${err.message}); skipping optional capture runtime.`);
 }
 console.log("");
 

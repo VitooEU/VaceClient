@@ -7,7 +7,7 @@ edition = "2021"
 default-run = "VaceClient"
 
 [workspace]
-members = ["crates/vito-ipc", "crates/vito-logging", "crates/vito-capture"]
+members = ["crates/vito-ipc", "crates/vito-logging"]
 
 [profile.release.package.vito-capture]
 opt-level = 3
