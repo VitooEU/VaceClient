@@ -94,7 +94,6 @@ const daemonTarget = path.join(staging, `vito-capture-${triple}.exe`);
 fs.copyFileSync(daemon, daemonTarget);
 ok(`vito-capture-${triple}.exe  (${mb(fs.statSync(daemonTarget).size)} MB)`);
 
-const ffmpegBin = path.join(srcTauri, "third-party", "ffmpeg", "bin");
 const hookDir = path.join(srcTauri, "third-party", "graphics-hook");
 
 let ffmpegBytes = 0;
