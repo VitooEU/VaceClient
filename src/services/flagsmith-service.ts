@@ -34,8 +34,8 @@ const initializeFlagsmith = async () => {
     flagsmithInitialized = true;
     log('info', 'Flagsmith service initialized successfully');
   } catch (error) {
-    log('error', `Failed to initialize Flagsmith service: ${error}`);
-    throw error;
+    log('warn', `Flagsmith service unavailable; using offline defaults: ${error}`);
+    flagsmithInitialized = false;
   }
 };
 
@@ -75,21 +75,18 @@ export const getPackRolloutConfig = async (): Promise<PackRolloutConfig> => {
         }
       }
 
-      log('info', `Pack rollout config: ${JSON.stringify(config)}`);
       cachedPackRollout = config;
 
       try {
-        // Backend only cares about aliases; rollout_pct is UI-only metadata.
         await invoke('set_pack_rollout_config', { config: { aliases: config.aliases } });
       } catch (error) {
-        log('error', `Failed to push pack rollout config to backend: ${error}`);
+        log('warn', `Failed to push pack rollout config to backend: ${error}`);
       }
 
       return config;
-    } catch (error) {
-      log('error', `Failed to fetch pack rollout config from Flagsmith: ${error}`);
-      packRolloutFetchPromise = null;
-      throw error;
+    } catch {
+      cachedPackRollout = { aliases: {} };
+      return cachedPackRollout;
     }
   })();
 
@@ -112,27 +109,22 @@ export const getPackFallbackConfig = async (): Promise<PackFallbackConfig | null
       if (!flagsmithInitialized) await initPromise;
 
       const flagValue = flagsmith.getValue('pack_fallback_id');
-      // Flag unset → leave the backend default ("norisk-stable") untouched.
       if (!flagValue || typeof flagValue !== 'string' || !flagValue.trim()) {
-        log('info', 'No pack_fallback_id flag set; keeping backend default');
         return null;
       }
 
       const config: PackFallbackConfig = { fallback_pack_id: flagValue.trim() };
-      log('info', `Pack fallback config: ${JSON.stringify(config)}`);
       cachedPackFallback = config;
 
       try {
         await invoke('set_pack_fallback_config', { config });
       } catch (error) {
-        log('error', `Failed to push pack fallback config to backend: ${error}`);
+        log('warn', `Failed to push pack fallback config to backend: ${error}`);
       }
 
       return config;
-    } catch (error) {
-      log('error', `Failed to fetch pack fallback config from Flagsmith: ${error}`);
-      packFallbackFetchPromise = null;
-      throw error;
+    } catch {
+      return null;
     }
   })();
 
@@ -268,10 +260,16 @@ export const getBlockedModsConfig = async (): Promise<BlockedModsConfig> => {
       }
       
       return config;
-    } catch (error) {
-      log('error', `Failed to fetch blocked mods config from Flagsmith: ${error}`);
-      configFetchPromise = null; // Allow retries
-      throw error;
+    } catch {
+      cachedBlockedModsConfig = {
+        exact_filenames: [],
+        filename_patterns: [],
+        mod_ids: [],
+        modrinth_project_ids: [],
+        warning_project_ids: [],
+        description: '',
+      };
+      return cachedBlockedModsConfig;
     }
   })();
   

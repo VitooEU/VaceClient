@@ -1216,6 +1216,12 @@ impl MinecraftAuthStore {
             None => true,
         };
         if mc_stale {
+            // Guard: If there is no refresh token (offline/guest/invalid), do NOT make blocking network calls!
+            if creds.refresh_token.trim().is_empty() {
+                debug!("[Token Check] No refresh token present for {}, skipping network refresh", creds.username);
+                return Ok(None);
+            }
+
             info!("[Token Check] Minecraft token stale or nearing expiry, initiating proactive refresh");
             let old_credentials = creds.clone();
 
@@ -1236,22 +1242,18 @@ impl MinecraftAuthStore {
                         Ok(Some(refreshed))
                     } else {
                         info!("[Token Check] Failed to refresh Microsoft token - No credentials found");
-                        Err(AppError::NoCredentialsError)
+                        Ok(None)
                     };
                 }
                 Err(err) => {
-                    if let Some(reason) = keep_cached_credentials_reason(&err) {
-                        info!(
-                            "[Token Check] {} during refresh, using cached credentials",
-                            reason
-                        );
-                        if is_offline_error(&err) {
-                            emit_offline_mode(&creds.username).await;
-                        }
-                        return Ok(None);
+                    warn!(
+                        "[Token Check] Failed to refresh token for {}: {:?}. Keeping existing cached credentials.",
+                        creds.username, err
+                    );
+                    if is_offline_error(&err) {
+                        emit_offline_mode(&creds.username).await;
                     }
-                    info!("[Token Check] Error during token refresh: {:?}", err);
-                    Err(err)
+                    return Ok(None);
                 }
             }
         } else {
